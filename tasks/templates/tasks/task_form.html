@@ -1,0 +1,21 @@
+{% extends "tasks/base.html" %}
+
+{% block title %}Task Form{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-body">
+            <h3 class="card-title">
+                {% if form.instance.pk %} Edit Task {% else %} New Task {% endif %}
+            </h3>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary mt-3">Save</button>
+                <a href="{% url 'task-list' %}" class="btn btn-secondary mt-3">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

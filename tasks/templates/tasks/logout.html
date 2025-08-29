@@ -1,0 +1,12 @@
+{% extends "tasks/base.html" %}
+{% block title %}Logged Out | Task Manager{% endblock %}
+
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+  <div class="text-center">
+    <h2 class="fw-bold">You’ve been logged out</h2>
+    <p class="text-muted">Thanks for using Task Manager. See you again soon!</p>
+    <a href="{% url 'login' %}" class="btn btn-primary rounded-3 px-4 py-2">Login Again</a>
+  </div>
+</div>
+{% endblock %}

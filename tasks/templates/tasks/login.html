@@ -1,0 +1,51 @@
+{% extends "tasks/base.html" %}
+{% block title %}Login | Task Manager{% endblock %}
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh">
+    <div class="card shadow-lg border-0 rounded-4 p-4" style="max-width: 420px; width: 100%">
+        <div class="card-body">
+            <h3 class="text-center mb-4 fw-bold">Welcome Back 👋</h3>
+
+            {% if form.errors %}
+            <div class="alert alert-danger rounded-3" role="alert">
+                Invalid username or password. Please try again.
+            </div>
+            {% endif %}
+
+            {% if next %}
+                {% if user.is_authenticated %}
+                <div class="alert alert-warning rounded-3" role="alert">
+                    Your account doesn’t have access to this page.
+                </div>
+                {% else %}
+                <div class="alert alert-info rounded-3" role="alert">
+                    Please login to access your tasks.
+                </div>
+                {% endif %}
+            {% endif %}
+
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_username" class="form-label">Username</label>
+                    <input type="text" name="username" id="id_username" class="form-control rounded-3" required autofocus />
+                </div>
+                <div class="mb-3">
+                    <label for="id_password" class="form-label">Password</label>
+                    <input type="password" name="password" id="id_password" class="form-control rounded-3" required />
+                </div>
+                <button type="submit" class="btn btn-primary w-100 rounded-3 py-2">
+                    Login
+                </button>
+            </form>
+
+            <div class="text-center mt-3">
+                <small class="text-muted">
+                    Don’t have an account?
+                    <a href="{% url 'signup' %}" class="text-decoration-none">Sign up</a>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

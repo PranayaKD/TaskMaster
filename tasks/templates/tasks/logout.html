@@ -1,12 +1,18 @@
 {% extends "tasks/base.html" %}
-{% block title %}Logged Out | Task Manager{% endblock %}
+
+{% block title %}Logged Out | TaskManager{% endblock %}
 
 {% block content %}
-<div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
-  <div class="text-center">
-    <h2 class="fw-bold">You’ve been logged out</h2>
-    <p class="text-muted">Thanks for using Task Manager. See you again soon!</p>
-    <a href="{% url 'login' %}" class="btn btn-primary rounded-3 px-4 py-2">Login Again</a>
+<div class="auth-container">
+  <div class="auth-card animate-fade-in" style="text-align: center; max-width: 420px;">
+    <div class="mb-4" style="font-size: 3.5rem;">
+      <i class="bi bi-hand-thumbs-up" style="color: var(--primary);"></i>
+    </div>
+    <h3 class="mb-2">You've been logged out</h3>
+    <p class="text-muted">Thanks for using TaskManager. See you again soon!</p>
+    <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+      <i class="bi bi-box-arrow-in-right"></i> Login Again
+    </a>
   </div>
 </div>
 {% endblock %}

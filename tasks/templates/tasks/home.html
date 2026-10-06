@@ -1,160 +1,265 @@
 {% extends "tasks/base.html" %}
+{% load static %}
 
-{% block title %}Welcome | TaskMaster{% endblock %}
+{% block title %}Welcome | TaskManager - Your Smart Productivity Hub{% endblock %}
 
 {% block content %}
-<style>
-    /* Hero section */
-    .hero {
-        background: linear-gradient(135deg, #06beb6 0%, #48b1bf 100%);
-        color: #fff;
-        padding: 80px 20px;
-        border-radius: 20px;
-        text-align: center;
-        animation: fadeIn 1.2s ease-in-out;
-    }
+<!-- Hero Section -->
+<section class="hero animate-fade-in">
+    <div class="row align-items-center">
+        <div class="col-lg-7 hero-content">
+            <h1>Master Your Tasks,<br>Achieve Your Goals</h1>
+            <p>
+                Your smart way to organize, prioritize, and accomplish more every day.
+                Join thousands of productive individuals who trust TaskManager.
+            </p>
+            {% if user.is_authenticated %}
+            <a href="{% url 'task-list' %}" class="btn btn-lg">
+                <i class="bi bi-rocket-takeoff"></i> Go to My Tasks
+            </a>
+            {% else %}
+            <div class="d-flex gap-3 flex-wrap justify-content-center justify-content-lg-start">
+                <a href="{% url 'signup' %}" class="btn btn-lg">
+                    <i class="bi bi-arrow-right-circle"></i> Get Started Free
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">
+                    <i class="bi bi-box-arrow-in-right"></i> Sign In
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-lg-5 mt-5 mt-lg-0 text-center">
+            <!-- Inline SVG illustration instead of external image dependency -->
+            <svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg"
+                style="max-width:380px; width:100%; position:relative; z-index:1; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.2));">
+                <!-- Background card -->
+                <rect x="30" y="20" width="340" height="280" rx="20" fill="rgba(255,255,255,0.12)"
+                    stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+                <!-- Task rows -->
+                <rect x="55" y="55" width="290" height="52" rx="10" fill="rgba(255,255,255,0.15)" />
+                <circle cx="82" cy="81" r="11" fill="none" stroke="#D4DE95" stroke-width="2.5" />
+                <rect x="103" y="72" width="140" height="10" rx="5" fill="rgba(255,255,255,0.6)" />
+                <rect x="103" y="88" width="80" height="7" rx="3.5" fill="rgba(255,255,255,0.3)" />
+                <rect x="255" y="74" width="55" height="18" rx="9" fill="#D4DE95" />
+                <rect x="55" y="120" width="290" height="52" rx="10" fill="rgba(255,255,255,0.15)" />
+                <circle cx="82" cy="146" r="11" fill="#5a8f5a" />
+                <path d="M76 146 l4 4 l7-7" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <rect x="103" y="137" width="110" height="10" rx="5" fill="rgba(255,255,255,0.4)"
+                    style="text-decoration:line-through;" />
+                <rect x="103" y="153" width="65" height="7" rx="3.5" fill="rgba(255,255,255,0.25)" />
+                <rect x="255" y="139" width="55" height="18" rx="9" fill="#5a8f5a" />
+                <rect x="55" y="185" width="290" height="52" rx="10" fill="rgba(255,255,255,0.15)" />
+                <circle cx="82" cy="211" r="11" fill="none" stroke="#c9a227" stroke-width="2.5" />
+                <rect x="103" y="202" width="160" height="10" rx="5" fill="rgba(255,255,255,0.6)" />
+                <rect x="103" y="218" width="95" height="7" rx="3.5" fill="rgba(255,255,255,0.3)" />
+                <rect x="250" y="204" width="70" height="18" rx="9" fill="#c9a227" />
+                <!-- Stats row at bottom -->
+                <rect x="55" y="258" width="85" height="28" rx="8" fill="rgba(255,255,255,0.1)" />
+                <text x="97" y="276" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="11"
+                    font-family="Inter, sans-serif" font-weight="600">3 Tasks</text>
+                <rect x="150" y="258" width="85" height="28" rx="8" fill="rgba(255,255,255,0.1)" />
+                <text x="192" y="276" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="11"
+                    font-family="Inter, sans-serif" font-weight="600">1 Done</text>
+                <rect x="245" y="258" width="85" height="28" rx="8" fill="rgba(255,255,255,0.1)" />
+                <text x="287" y="276" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="11"
+                    font-family="Inter, sans-serif" font-weight="600">2 Active</text>
+            </svg>
+        </div>
+    </div>
+</section>
 
-    .hero h1 {
-        font-size: 2.8rem;
-        font-weight: 700;
-        margin-bottom: 15px;
-    }
-
-    .hero p {
-        font-size: 1.2rem;
-        opacity: 0.9;
-    }
-
-    .hero .btn {
-        margin-top: 20px;
-        padding: 12px 28px;
-        border-radius: 50px;
-        background: #fff;
-        color: #06beb6;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .hero .btn:hover {
-        transform: translateY(-3px);
-        background: #48b1bf;
-        color: #fff;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Features */
-    .features {
-        margin-top: 60px;
-    }
-
-    .feature-card {
-        background: #fff;
-        border-radius: 15px;
-        padding: 30px;
-        text-align: center;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    .feature-card:hover {
-        transform: translateY(-6px) scale(1.02);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .feature-card i {
-        font-size: 2rem;
-        color: #06beb6;
-        margin-bottom: 15px;
-    }
-
-    /* CTA */
-    .cta {
-        margin-top: 70px;
-        background: linear-gradient(135deg, #48b1bf, #06beb6);
-        padding: 60px 20px;
-        border-radius: 15px;
-        text-align: center;
-        color: #fff;
-        animation: slideUp 1.2s ease-in-out;
-    }
-
-    .cta h2 {
-        font-weight: 700;
-        margin-bottom: 20px;
-    }
-
-    .cta .btn {
-        background: #fff;
-        color: #06beb6;
-        font-weight: 600;
-        border-radius: 50px;
-        padding: 12px 28px;
-        transition: all 0.3s ease;
-    }
-
-    .cta .btn:hover {
-        background: #004d4d;
-        color: #fff;
-        transform: scale(1.05);
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes slideUp {
-        from { opacity: 0; transform: translateY(50px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
-
-<!-- Hero -->
-<div class="hero">
-    <h1>Welcome to TaskMaster</h1>
-    <p>Your smart way to organize, prioritize, and achieve your goals 🚀</p>
-    {% if user.is_authenticated %}
-        <a href="{% url 'task-list' %}" class="btn">Go to My Tasks</a>
-    {% else %}
-        <a href="{% url 'login' %}" class="btn">Get Started</a>
-    {% endif %}
-</div>
-
-<!-- Features -->
-<div class="container features">
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="feature-card">
-                <i class="bi bi-lightning-charge-fill"></i>
-                <h5>Fast & Easy</h5>
-                <p>Create and manage tasks with just a few clicks. Stay productive effortlessly.</p>
+<!-- Stats Banner -->
+<section class="container my-5 animate-slide-up">
+    <div class="row g-4 text-center">
+        <div class="col-6 col-md-3">
+            <div class="stats-card">
+                <div class="count">50K+</div>
+                <div class="label">Active Users</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="feature-card">
-                <i class="bi bi-check-circle-fill"></i>
-                <h5>Stay Organized</h5>
-                <p>Keep all your tasks in one place, sorted by priority & status.</p>
+        <div class="col-6 col-md-3">
+            <div class="stats-card">
+                <div class="count">1M+</div>
+                <div class="label">Tasks Completed</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="feature-card">
-                <i class="bi bi-graph-up-arrow"></i>
-                <h5>Track Progress</h5>
-                <p>Visualize your progress and hit your deadlines without stress.</p>
+        <div class="col-6 col-md-3">
+            <div class="stats-card">
+                <div class="count">99%</div>
+                <div class="label">Satisfaction</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stats-card">
+                <div class="count">24/7</div>
+                <div class="label">Availability</div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Call to Action -->
-<div class="cta mt-5">
-    <h2>Boost your productivity today ✨</h2>
-    {% if user.is_authenticated %}
-        <a href="{% url 'task-create' %}" class="btn">Add New Task</a>
-    {% else %}
-        <a href="{% url 'signup' %}" class="btn">Join Now</a>
-    {% endif %}
-</div>
+<!-- Features Section -->
+<section class="features-section">
+    <div class="section-title">
+        <h2 class="text-gradient">Why Choose TaskManager?</h2>
+        <p class="text-muted">Everything you need to stay organized and productive</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4 observe-animate stagger-1">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                </div>
+                <h5>Fast & Intuitive</h5>
+                <p>Create and manage tasks in seconds. Our streamlined interface lets you focus on what matters most.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 observe-animate stagger-2">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-kanban"></i>
+                </div>
+                <h5>Smart Organization</h5>
+                <p>Categorize tasks by priority and status. Filter and search to find exactly what you need instantly.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 observe-animate stagger-3">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <h5>Track Progress</h5>
+                <p>Visualize your productivity with clear stats. See tasks to-do, in progress, and completed at a
+                    glance.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 observe-animate stagger-4">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <h5>Due Date Tracking</h5>
+                <p>Never miss a deadline. Set due dates and stay on top of your schedule with ease.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 observe-animate stagger-5">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-phone"></i>
+                </div>
+                <h5>Responsive Design</h5>
+                <p>Access your tasks anywhere. Works beautifully on desktop, tablet, and mobile devices.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 observe-animate stagger-5">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h5>Secure & Private</h5>
+                <p>Your data is protected. Secure authentication keeps your tasks safe and private.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="container my-5">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <!-- Simple visual: 3-step flow -->
+            <div class="d-flex flex-column gap-4">
+                <div class="d-flex align-items-start gap-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style="width:48px; height:48px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color:white; font-weight:700; font-size:1.1rem;">
+                        1
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Create Your Tasks</h5>
+                        <p class="text-muted mb-0 small">Add tasks with a title, description, priority level, and
+                            optional due date.</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start gap-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style="width:48px; height:48px; background: linear-gradient(135deg, var(--warning), #d9b53a); color:white; font-weight:700; font-size:1.1rem;">
+                        2
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Organize & Filter</h5>
+                        <p class="text-muted mb-0 small">Sort by status or priority. Use the sidebar to jump between
+                            views instantly.</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start gap-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style="width:48px; height:48px; background: linear-gradient(135deg, var(--success), #6da06d); color:white; font-weight:700; font-size:1.1rem;">
+                        3
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Complete & Celebrate</h5>
+                        <p class="text-muted mb-0 small">Mark tasks done with one click. Watch your productivity grow
+                            over time.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <h2 class="mb-4">Stay Organized,<br><span class="text-gradient">Stay Productive</span></h2>
+            <p class="lead text-muted mb-4">
+                TaskManager brings all your tasks together in one clean, easy-to-use platform.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background: var(--success-light);">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <span class="small fw-semibold">Priority Levels</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background: var(--warning-light);">
+                    <i class="bi bi-arrow-repeat" style="color: var(--warning);"></i>
+                    <span class="small fw-semibold">Status Tracking</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background: var(--info-light);">
+                    <i class="bi bi-calendar-check" style="color: var(--info);"></i>
+                    <span class="small fw-semibold">Due Dates</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background: var(--gray-100);">
+                    <i class="bi bi-search" style="color: var(--primary);"></i>
+                    <span class="small fw-semibold">Quick Search</span>
+                </div>
+            </div>
+
+            {% if not user.is_authenticated %}
+            <a href="{% url 'signup' %}" class="btn btn-primary btn-lg mt-4">
+                <i class="bi bi-leaf"></i> Start Your Journey
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="cta-content">
+        <h2>Ready to Boost Your Productivity? ✨</h2>
+        <p>Join thousands of users who have transformed the way they manage tasks.</p>
+        {% if user.is_authenticated %}
+        <a href="{% url 'task-create' %}" class="btn">
+            <i class="bi bi-plus-circle"></i> Create Your First Task
+        </a>
+        {% else %}
+        <a href="{% url 'signup' %}" class="btn">
+            <i class="bi bi-rocket-takeoff"></i> Get Started for Free
+        </a>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

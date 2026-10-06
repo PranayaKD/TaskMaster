@@ -1,184 +1,256 @@
 {% extends 'tasks/base.html' %}
+{% load static %}
 
-{% block title %}Task List | TaskMaster{% endblock %}
+{% block title %}My Tasks | TaskManager{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-<div class="page-header text-center mb-5">
-    <h1 class="fw-bold text-gradient">
-        <i class="bi bi-list-check"></i> My Tasks
-    </h1>
-    <p class="text-muted">Stay organized and manage your tasks efficiently</p>
+<!-- Header -->
+<div class="main-content-header">
+    <div class="d-flex align-items-center gap-3">
+        <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <h1 class="main-content-title">
+
+            {% if request.GET.status == 'todo' %}
+            To Do Tasks
+
+            {% elif request.GET.status == 'in_progress' %}
+            In Progress Tasks
+
+            {% elif request.GET.status == 'done' %}
+            Completed Tasks
+
+            {% elif request.GET.priority == 'high' %}
+            High Priority Tasks
+
+            {% elif request.GET.priority == 'medium' %}
+            Medium Priority Tasks
+
+            {% elif request.GET.priority == 'low' %}
+            Low Priority Tasks
+
+            {% else %}
+            All Tasks
+
+            {% endif %}
+
+        </h1>
+
+    </div>
+
+    <div class="main-content-actions">
+        <a href="{% url 'task-create' %}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg"></i> New Task
+        </a>
+    </div>
 </div>
 
-<div class="container">
-    {% if user.is_authenticated %}
-    <!-- Stats Section -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-4">
-            <div class="card text-center shadow-sm border-0 rounded-4">
-                <div class="card-body py-4">
-                    <h3 class="fw-bold text-primary">{{ todo_count }}</h3>
-                    <p class="mb-0">To Do</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-center shadow-sm border-0 rounded-4">
-                <div class="card-body py-4">
-                    <h3 class="fw-bold text-warning">{{ in_progress_count }}</h3>
-                    <p class="mb-0">In Progress</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card text-center shadow-sm border-0 rounded-4">
-                <div class="card-body py-4">
-                    <h3 class="fw-bold text-success">{{ done_count }}</h3>
-                    <p class="mb-0">Completed</p>
-                </div>
-            </div>
-        </div>
+<!-- Search Bar -->
+<form method="get" class="mb-4" role="search">
+    <div class="search-wrapper">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" name="search" id="searchInput" class="form-control" placeholder="Search tasks..."
+            value="{{ request.GET.search|default:'' }}" autocomplete="off">
     </div>
+
+    <!-- Preserve active filters when searching -->
+    {% if request.GET.status %}
+    <input type="hidden" name="status" value="{{ request.GET.status }}">
+    {% endif %}
+    {% if request.GET.priority %}
+    <input type="hidden" name="priority" value="{{ request.GET.priority }}">
+    {% endif %}
+</form>
+
+<!-- Active Filter Chips (show when a filter is active) -->
+{% if request.GET.status or request.GET.priority or request.GET.search %}
+<div class="d-flex flex-wrap gap-2 mb-4 align-items-center">
+    <span class="text-muted small">Filters:</span>
+    {% if request.GET.search %}
+    <span class="badge badge-date">
+        <i class="bi bi-search"></i> "{{ request.GET.search }}"
+        <a href="?{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}{% if request.GET.priority %}priority={{ request.GET.priority }}{% endif %}"
+            class="text-decoration-none ms-1" style="color: inherit; opacity:0.7;">&times;</a>
+    </span>
     {% endif %}
 
-    <!-- Filter Form -->
-    <div class="card shadow-sm border-0 rounded-4 mb-4 bg-light">
-        <div class="card-body">
-            <form method="get" class="row g-3 align-items-end">
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Search</label>
-                    <input type="text" name="search" class="form-control"
-                           placeholder="Search tasks..." 
-                           value="{{ request.GET.search|default_if_none:'' }}">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Status</label>
-                    <select name="status" class="form-select">
-                        <option value="">All Status</option>
-                        <option value="todo" {% if request.GET.status == 'todo' %}selected{% endif %}>To Do</option>
-                        <option value="in_progress" {% if request.GET.status == 'in_progress' %}selected{% endif %}>In Progress</option>
-                        <option value="done" {% if request.GET.status == 'done' %}selected{% endif %}>Done</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Priority</label>
-                    <select name="priority" class="form-select">
-                        <option value="">All Priorities</option>
-                        <option value="high" {% if request.GET.priority == 'high' %}selected{% endif %}>High</option>
-                        <option value="medium" {% if request.GET.priority == 'medium' %}selected{% endif %}>Medium</option>
-                        <option value="low" {% if request.GET.priority == 'low' %}selected{% endif %}>Low</option>
-                    </select>
-                </div>
-                <div class="col-md-2 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-search"></i> Filter
-                    </button>
-                    <a href="{% url 'task-list' %}" class="btn btn-outline-secondary w-100">
-                        <i class="bi bi-x-circle"></i> Reset
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
+    {% if request.GET.status %}
+    <span
+        class="badge {% if request.GET.status == 'todo' %}badge-status-todo{% elif request.GET.status == 'in_progress' %}badge-status-in-progress{% else %}badge-status-done{% endif %}">
+        {% if request.GET.status == 'todo' %}To Do{% elif request.GET.status == 'in_progress' %}In Progress{% else
+        %}Done{% endif %}
+        <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.priority %}priority={{ request.GET.priority }}{% endif %}"
+            class="text-decoration-none ms-1" style="color: inherit; opacity:0.7;">&times;</a>
+    </span>
+    {% endif %}
 
-    <!-- Task List -->
+    {% if request.GET.priority %}
+    <span
+        class="badge {% if request.GET.priority == 'high' %}badge-priority-high{% elif request.GET.priority == 'medium' %}badge-priority-medium{% else %}badge-priority-low{% endif %}">
+        {% if request.GET.priority == 'high' %}High{% elif request.GET.priority == 'medium' %}Medium{% else %}Low{%
+        endif %} Priority
+        <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}{% endif %}"
+            class="text-decoration-none ms-1" style="color: inherit; opacity:0.7;">&times;</a>
+    </span>
+    {% endif %}
+
+    <a href="{% url 'task-list' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-x-circle"></i> Clear All
+    </a>
+</div>
+{% endif %}
+
+<!-- Task List -->
+<div class="task-list">
     {% for task in tasks %}
-    <div class="card shadow-sm border-0 rounded-4 mb-3">
-        <div class="card-body">
-            <div class="row align-items-center">
-                <div class="col-md-7">
-                    <h5 class="fw-bold mb-1">
-                        {% if task.completed %}
-                            <s class="text-muted">{{ task.title }}</s>
-                        {% else %}
-                            {{ task.title }}
-                        {% endif %}
-                    </h5>
-                    <p class="text-muted small mb-2">{{ task.description|truncatewords:20 }}</p>
-                    <div class="d-flex flex-wrap gap-2">
-                        <span class="badge bg-{{ task.priority }}">
-                            {{ task.get_priority_display }}
-                        </span>
-                        <span class="badge 
-                            {% if task.status == 'todo' %} bg-secondary 
-                            {% elif task.status == 'in_progress' %} bg-warning text-dark 
-                            {% elif task.status == 'done' %} bg-success 
-                            {% endif %}">
-                            {{ task.get_status_display }}
-                        </span>
-                        {% if task.due_date %}
-                        <span class="badge bg-light text-dark border">
-                            <i class="bi bi-calendar"></i> {{ task.due_date|date:"M d, Y" }}
-                        </span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="col-md-5 text-end">
-                    <a href="{% url 'task-detail' task.pk %}" class="btn btn-sm btn-outline-primary rounded-pill">
-                        <i class="bi bi-eye"></i> View
-                    </a>
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'task-update' task.pk %}" class="btn btn-sm btn-outline-warning rounded-pill">
-                            <i class="bi bi-pencil"></i> Edit
-                        </a>
-                        <a href="{% url 'task-toggle' task.pk %}" class="btn btn-sm btn-outline-success rounded-pill">
-                            {% if task.completed %}
-                                <i class="bi bi-x-circle"></i> Undo
-                            {% else %}
-                                <i class="bi bi-check-circle"></i> Complete
-                            {% endif %}
-                        </a>
-                        <a href="{% url 'task-delete' task.pk %}" class="btn btn-sm btn-outline-danger rounded-pill">
-                            <i class="bi bi-trash"></i> Delete
-                        </a>
+    <div class="task-card {% if task.completed %}completed{% endif %}">
+        <div class="row align-items-start">
+
+            <!-- Left Column: Title, Description, Badges -->
+            <div class="col-12 col-md-8 mb-3 mb-md-0">
+
+                <!-- Title -->
+                <h5 class="task-title mb-2">
+                    {% if task.completed %}
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <s class="text-muted">{{ task.title }}</s>
+                    {% else %}
+                    <i class="bi bi-circle me-2 text-muted"></i>
+                    {{ task.title }}
+                    {% endif %}
+                </h5>
+
+                <!-- Description preview -->
+                {% if task.description %}
+                <p class="text-muted small mb-2">
+                    {{ task.description|truncatewords:20 }}
+                </p>
+                {% endif %}
+
+                <!-- Badges -->
+                <div class="d-flex flex-wrap gap-2">
+                    <!-- Priority -->
+                    <span
+                        class="badge {% if task.priority == 'high' %}badge-priority-high{% elif task.priority == 'medium' %}badge-priority-medium{% else %}badge-priority-low{% endif %}">
+                        {{ task.get_priority_display }}
+                    </span>
+
+                    <!-- Status -->
+                    <span
+                        class="badge {% if task.status == 'todo' %}badge-status-todo{% elif task.status == 'in_progress' %}badge-status-in-progress{% else %}badge-status-done{% endif %}">
+                        {{ task.get_status_display }}
+                    </span>
+
+                    <!-- Due Date -->
+                    {% if task.due_date %}
+                    <span class="badge badge-date">
+                        <i class="bi bi-calendar-event"></i>
+                        {{ task.due_date|date:"M d" }}
+                    </span>
                     {% endif %}
                 </div>
             </div>
+
+            <!-- Right Column: Action Buttons -->
+            <div class="col-12 col-md-4">
+                <div class="task-actions">
+                    <!-- View -->
+                    <a href="{% url 'task-detail' task.pk %}" class="btn btn-outline-primary btn-sm" title="View">
+                        <i class="bi bi-eye"></i>
+                    </a>
+
+                    <!-- Edit -->
+                    <a href="{% url 'task-update' task.pk %}" class="btn btn-outline-warning btn-sm" title="Edit">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+
+                    <!-- Toggle Complete -->
+                    <a href="{% url 'task-toggle' task.pk %}" class="btn btn-outline-success btn-sm"
+                        title="{% if task.completed %}Mark Incomplete{% else %}Mark Complete{% endif %}">
+                        {% if task.completed %}
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        {% else %}
+                        <i class="bi bi-check-lg"></i>
+                        {% endif %}
+                    </a>
+
+                    <!-- Delete -->
+                    <a href="{% url 'task-delete' task.pk %}" class="btn btn-outline-danger btn-sm" title="Delete">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+            </div>
+
         </div>
     </div>
+
     {% empty %}
-    <div class="alert alert-info shadow-sm border-0 rounded-4 text-center py-4">
-        <i class="bi bi-inbox fs-3"></i>
-        <p class="mt-2 mb-0">No tasks found.</p>
+    <!-- Empty State -->
+    <div class="empty-state">
+        <i class="bi bi-inbox-fill"></i>
+        <h4>No Tasks Found</h4>
+        <p>
+            {% if request.GET.search or request.GET.status or request.GET.priority %}
+            No tasks match your current filters. Try adjusting or clearing them.
+            {% else %}
+            You haven't created any tasks yet. Start by adding your first one!
+            {% endif %}
+        </p>
+
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            {% if request.GET.search or request.GET.status or request.GET.priority %}
+            <a href="{% url 'task-list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle"></i> Clear Filters
+            </a>
+            {% endif %}
+            <a href="{% url 'task-create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Add Task
+            </a>
+        </div>
     </div>
     {% endfor %}
+</div>
 
-    <!-- Pagination -->
-    {% if is_paginated %}
-    <nav aria-label="Task pagination">
-      <ul class="pagination justify-content-center">
+{% if is_paginated %}
+<nav aria-label="Task pagination" class="mt-4">
+    <ul class="pagination justify-content-center">
+
+        <!-- Previous -->
         {% if page_obj.has_previous %}
-          <li class="page-item">
-            <a class="page-link" href="?page=1&search={{ request.GET.search }}&status={{ request.GET.status }}&priority={{ request.GET.priority }}">« First</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ request.GET.search }}&status={{ request.GET.status }}&priority={{ request.GET.priority }}">‹ Prev</a>
-          </li>
+        <li class="page-item">
+            <a class="page-link"
+                href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+        </li>
         {% endif %}
 
-        {% for num in paginator.page_range %}
-          {% if page_obj.number == num %}
-            <li class="page-item active">
-              <span class="page-link">{{ num }}</span>
-            </li>
-          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-            <li class="page-item">
-              <a class="page-link" href="?page={{ num }}&search={{ request.GET.search }}&status={{ request.GET.status }}&priority={{ request.GET.priority }}">{{ num }}</a>
-            </li>
-          {% endif %}
+        <!-- Page Numbers -->
+        {% for num in page_range %}
+        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+            {% if page_obj.number == num %}
+            <span class="page-link">{{ num }}</span>
+            {% else %}
+            <a class="page-link"
+                href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                {{ num }}
+            </a>
+            {% endif %}
+        </li>
         {% endfor %}
 
+        <!-- Next -->
         {% if page_obj.has_next %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ request.GET.search }}&status={{ request.GET.status }}&priority={{ request.GET.priority }}">Next ›</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="?page={{ paginator.num_pages }}&search={{ request.GET.search }}&status={{ request.GET.status }}&priority={{ request.GET.priority }}">Last »</a>
-          </li>
+        <li class="page-item">
+            <a class="page-link"
+                href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
         {% endif %}
-      </ul>
-    </nav>
-    {% endif %}
-</div>
-{% endblock %}
+
+    </ul>
+</nav>
+{% endif %}

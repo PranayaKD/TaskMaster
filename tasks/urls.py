@@ -6,7 +6,7 @@ from .views import (
 )
 
 urlpatterns = [
-    # tasks
+    # Task CRUD
     path('', TaskListView.as_view(), name='task-list'),
     path('task/new/', TaskCreateView.as_view(), name='task-create'),
     path('task/<int:pk>/', TaskDetailView.as_view(), name='task-detail'),
@@ -14,8 +14,8 @@ urlpatterns = [
     path('task/<int:pk>/delete/', TaskDeleteView.as_view(), name='task-delete'),
     path('task/<int:pk>/toggle/', toggle_complete, name='task-toggle'),
 
-    # authentication
+    # Authentication
     path('signup/', SignupView.as_view(), name='signup'),
     path('login/', auth_views.LoginView.as_view(template_name='tasks/login.html'), name='login'),
-path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(template_name='tasks/logged_out.html'), name='logout'),
 ]

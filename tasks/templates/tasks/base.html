@@ -4,247 +4,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Task Manager{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="description"
+        content="TaskManager - Your smart way to organize, prioritize, and achieve your goals. Manage tasks efficiently with a modern, intuitive interface.">
+    <meta name="keywords" content="task manager, productivity, todo list, project management, organize tasks">
+    <meta name="author" content="PranayaKD">
+    <meta name="theme-color" content="#636B2F">
+
+    <title>{% block title %}TaskManager{% endblock %}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --primary-gradient-hover: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-            --soft-purple: #667eea;
-            --deep-purple: #764ba2;
-        }
+    <!-- Custom Styles -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-        body {
-            background: linear-gradient(180deg, #f9f9ff, #f8f9fa);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-
-        .navbar {
-            background: rgba(102, 126, 234, 0.95);
-            /* Glass-like */
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.4s ease-in-out;
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.6rem;
-            color: #fff !important;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: transform 0.3s ease;
-        }
-
-        .navbar-brand:hover {
-            transform: scale(1.08) rotate(-1deg);
-        }
-
-        .nav-link {
-            position: relative;
-            font-weight: 500;
-            color: #fff !important;
-            padding: 8px 15px !important;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 20%;
-            width: 0%;
-            height: 2px;
-            background: #fff;
-            transition: width 0.3s ease, left 0.3s ease;
-            border-radius: 4px;
-        }
-
-        .nav-link:hover::after,
-        .nav-link.active::after {
-            width: 60%;
-            left: 20%;
-        }
-
-        .nav-link:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-
-        .nav-link.btn {
-            color: #ffc107 !important;
-            font-weight: 600;
-            transition: transform 0.3s ease, color 0.3s ease;
-        }
-
-        .nav-link.btn:hover {
-            transform: translateY(-2px) scale(1.05);
-            color: #fff !important;
-        }
-
-        .navbar-toggler {
-            border: none;
-            outline: none;
-        }
-
-        .navbar-toggler:focus {
-            box-shadow: none;
-        }
-
-        .navbar-toggler-icon {
-            filter: brightness(0) invert(1);
-        }
-
-
-        .btn-primary {
-            background: var(--primary-gradient);
-            border: none;
-            border-radius: 10px;
-            padding: 10px 20px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-gradient-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .alert {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
-        }
-
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            letter-spacing: 0.5px;
-        }
-
-        .card {
-            border-radius: 16px;
-            border: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
-        }
-
-        .card-header {
-            border-top: 4px solid var(--soft-purple);
-            background: #fff;
-        }
-
-        footer {
-            background: #fff;
-            border-top: 1px solid #eaeaea;
-            padding: 15px 0;
-            margin-top: 40px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #1f1f1f;
-        }
-
-        footer i {
-            color: #dc3545;
-        }
-
-        .badge.bg-high {
-            background: #dc3545 !important;
-            color: #fff !important;
-        }
-
-        .badge.bg-medium {
-            background: #fd7e14 !important;
-            color: #fff !important;
-        }
-
-        .badge.bg-low {
-            background: #198754 !important;
-            color: #fff !important;
-        }
-
-        .badge.status-todo {
-            background: #6c757d !important;
-        }
-
-        .badge.status-in_progress {
-            background: #ffc107 !important;
-            color: #212529 !important;
-        }
-
-        .badge.status-done {
-            background: #198754 !important;
-        }
-
-        .card {
-            border-radius: 1rem !important;
-            border: none !important;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.205) !important;
-        }
-
-        .card-header {
-            border-top: 4px solid var(--soft-purple) !important;
-            background: #fff !important;
-        }
-
-        .btn {
-            border-radius: 50px !important;
-            font-weight: 500;
-            transition: all 0.2s ease-in-out;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .page-header h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-        }
-
-        .text-gradient {
-            background: linear-gradient(45deg, #0d6efd, #6610f2);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .task-card {
-            background: #fff;
-            border-radius: 1rem;
-            padding: 1.2rem 1.5rem;
-            margin-bottom: 1rem;
-            border: 1px solid #eaeaea;
-            transition: all 0.25s ease-in-out;
-        }
-
-        .task-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-            border-color: #667eea;
-        }
-    </style>
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <nav class="navbar navbar-expand-lg" id="mainNavbar">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'task-list' %}">
-                <i class="bi bi-check2-square"></i> TaskMaster
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="bi bi-check2-circle"></i>
+                <span>TaskManager</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -253,21 +51,16 @@
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
                             href="{% url 'home' %}">
-                            <i class="bi bi-house-door"></i> Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'task-list' %}active{% endif %}"
-                            href="{% url 'task-list' %}">
-                            <i class="bi bi-list-task"></i> Tasks
+                            <i class="bi bi-house-heart"></i> Home
                         </a>
                     </li>
 
                     {% if user.is_authenticated %}
-                    <li class="nav-item mx-lg-2">
-                        <span class="badge bg-light text-dark px-3 py-2 rounded-pill">
-                            <i class="bi bi-person-circle"></i> {{ user.username }}
-                        </span>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'task-list' %}active{% endif %}"
+                            href="{% url 'task-list' %}">
+                            <i class="bi bi-list-task"></i> My Tasks
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'task-create' %}active{% endif %}"
@@ -275,10 +68,17 @@
                             <i class="bi bi-plus-circle"></i> New Task
                         </a>
                     </li>
+                    <li class="nav-item mx-lg-2">
+                        <span class="user-badge">
+                            <i class="bi bi-person-circle"></i>
+                            {{ user.username }}
+                        </span>
+                    </li>
                     <li class="nav-item">
                         <form method="post" action="{% url 'logout' %}" style="display:inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn nav-link text-warning border-0 bg-transparent p-0">
+                            <button type="submit" class="nav-link btn btn-sm"
+                                style="background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.9) !important; padding: 0.5rem 1rem; border-radius: 0.75rem; transition: background 0.25s ease;">
                                 <i class="bi bi-box-arrow-right"></i> Logout
                             </button>
                         </form>
@@ -291,9 +91,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'signup' %}active{% endif %}"
-                            href="{% url 'signup' %}">
-                            <i class="bi bi-person-plus"></i> Signup
+                        <a class="nav-link btn btn-accent ms-lg-2 {% if request.resolver_match.url_name == 'signup' %}active{% endif %}"
+                            href="{% url 'signup' %}" style="color: var(--dark) !important;">
+                            <i class="bi bi-person-plus"></i> Sign Up
                         </a>
                     </li>
                     {% endif %}
@@ -302,28 +102,193 @@
         </div>
     </nav>
 
+    <!-- Alert Messages -->
     {% if messages %}
-    <div class="container mt-3">
+    <div class="container mt-4">
         {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show animate-slide-up" role="alert">
+            <i
+                class="bi {% if message.tags == 'success' %}bi-check-circle{% elif message.tags == 'warning' %}bi-exclamation-triangle{% elif message.tags == 'danger' %}bi-x-circle{% else %}bi-info-circle{% endif %}"></i>
+            <span>{{ message }}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <main class="container my-4">
-        {% block content %}{% endblock %}
-    </main>
+
+    {% if user.is_authenticated %}
+    <!-- Authenticated: Sidebar + Main Layout -->
+    <div class="container-fluid">
+        <div class="app-layout">
+
+            <!-- Mobile Sidebar Overlay -->
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <!-- Sidebar Actions -->
+                <div class="sidebar-actions">
+                    <button class="sidebar-action-btn" title="Search"
+                        onclick="if(document.getElementById('searchInput')){document.getElementById('searchInput').focus();}else{window.location.href='{% url 'task-list' %}';}">
+                        <i class="bi bi-search"></i>
+                    </button>
+                    <a href="{% url 'task-create' %}" class="sidebar-add-btn">
+                        <i class="bi bi-plus"></i> Add Task
+                    </a>
+                </div>
+
+                <!-- Navigation Section -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">My Tasks</div>
+                    <ul class="sidebar-nav">
+                        <li class="sidebar-nav-item">
+                            <a href="{% url 'task-list' %}"
+                                class="sidebar-nav-link {% if request.resolver_match.url_name == 'task-list' and not request.GET.status and not request.GET.priority %}active{% endif %}">
+                                <span><i class="bi bi-check2-all"></i> All Tasks</span>
+                                {% if todo_count is not None %}
+                                <span class="badge">{{ todo_count|add:in_progress_count|add:done_count }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="{% url 'task-list' %}?status=todo"
+                                class="sidebar-nav-link {% if request.GET.status == 'todo' %}active{% endif %}">
+                                <span><i class="bi bi-hourglass-split"></i> To Do</span>
+                                {% if todo_count is not None %}<span class="badge">{{ todo_count }}</span>{% endif %}
+                            </a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="{% url 'task-list' %}?status=in_progress"
+                                class="sidebar-nav-link {% if request.GET.status == 'in_progress' %}active{% endif %}">
+                                <span><i class="bi bi-arrow-repeat"></i> In Progress</span>
+                                {% if in_progress_count is not None %}<span class="badge">{{ in_progress_count
+                                    }}</span>{% endif %}
+                            </a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="{% url 'task-list' %}?status=done"
+                                class="sidebar-nav-link {% if request.GET.status == 'done' %}active{% endif %}">
+                                <span><i class="bi bi-check-circle"></i> Completed</span>
+                                {% if done_count is not None %}<span class="badge">{{ done_count }}</span>{% endif %}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-divider"></div>
+
+                <!-- Priority Section -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Priority</div>
+                    <ul class="sidebar-nav">
+                        <li class="sidebar-nav-item">
+                            <a href="{% url 'task-list' %}?priority=high"
+                                class="sidebar-nav-link {% if request.GET.priority == 'high' %}active{% endif %}">
+                                <span><i class="bi bi-flag-fill" style="color: var(--danger);"></i> High Priority</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="{% url 'task-list' %}?priority=medium"
+                                class="sidebar-nav-link {% if request.GET.priority == 'medium' %}active{% endif %}">
+                                <span><i class="bi bi-flag-fill" style="color: var(--warning);"></i> Medium
+                                    Priority</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="{% url 'task-list' %}?priority=low"
+                                class="sidebar-nav-link {% if request.GET.priority == 'low' %}active{% endif %}">
+                                <span><i class="bi bi-flag-fill" style="color: var(--success);"></i> Low Priority</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Main Content wrapper (authenticated) -->
+            <main class="main-content">
+                {% else %}
+                <!-- Unauthenticated: plain container, no sidebar -->
+                <main class="container my-4">
+                    {% endif %}
+
+                    <!-- ★ THE SINGLE BLOCK — appears exactly once ★ -->
+                    {% block content %}{% endblock %}
+
+                    <!-- Close <main> -->
+                </main>
+
+                {% if user.is_authenticated %}
+        </div><!-- end app-layout -->
+    </div><!-- end container-fluid -->
+    {% endif %}
+
+    <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; {{ now|date:"Y" }} TaskMaster. Built with <i class="bi bi-heart-fill text-danger"></i> using
-                Django + Bootstrap by PranayaKD.</p>
+            <div class="footer-content">
+                <p>
+                    &copy; 2025 TaskManager. Crafted with
+                    <i class="bi bi-heart-fill heart-icon"></i>
+                    using Django + Bootstrap by
+                    <a href="#">PranayaKD</a>
+                </p>
+            </div>
         </div>
     </footer>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom Scripts -->
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function () {
+            const navbar = document.getElementById('mainNavbar');
+            if (navbar) {
+                navbar.classList.toggle('scrolled', window.scrollY > 50);
+            }
+        });
+
+        // Intersection Observer: animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -40px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.observe-animate').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Sidebar toggle (mobile)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('show');
+            }
+        }
+
+        // Close sidebar when overlay is clicked
+        document.addEventListener('DOMContentLoaded', function () {
+            const overlay = document.getElementById('sidebarOverlay');
+            if (overlay) {
+                overlay.addEventListener('click', toggleSidebar);
+            }
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
 </body>
 
 </html>
